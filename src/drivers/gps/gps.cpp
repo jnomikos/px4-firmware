@@ -94,6 +94,10 @@ struct GPS_Sat_Info {
 
 static constexpr int TASK_STACK_SIZE = 1760;
 
+#ifdef __PX4_QURT
+#define QURT_GPS_UART_PORT "6"
+#endif
+
 
 class GPS : public ModuleBase<GPS>
 {
@@ -584,6 +588,8 @@ int GPS::setBaudrate(unsigned baud)
 		GPS_ERR("ERR: %d (tcsetattr)", termios_state);
 		return -1;
 	}
+#else
+	qurt_uart_open(QURT_GPS_UART_PORT, baud);
 #endif
 
 	return 0;
@@ -659,7 +665,7 @@ GPS::run()
 	if (!_fake_gps) {
 		/* open the serial port */
 #ifdef __PX4_QURT
-		_serial_fd = qurt_uart_open("6", _configured_baudrate);
+		_serial_fd = qurt_uart_open(QURT_GPS_UART_PORT, 9600);
 #else
 		_serial_fd = ::open(_port, O_RDWR | O_NOCTTY);
 #endif
