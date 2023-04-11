@@ -1,4 +1,3 @@
-
 /****************************************************************************
  *
  *   Copyright (c) 2023 PX4 Development Team. All rights reserved.
@@ -35,7 +34,7 @@
 #ifndef OPEN_DRONE_ID_ARM_STATUS_HPP
 #define OPEN_DRONE_ID_ARM_STATUS_HPP
 
-#include <uORB/topics/actuator_armed.h>
+#include <uORB/topics/open_drone_id_arm_status.h>
 
 class MavlinkStreamOpenDroneIdArmStatus : public MavlinkStream
 {
@@ -59,7 +58,7 @@ public:
 
 	unsigned get_size() override
 	{
-		return _actuator_armed_sub.advertised()
+		return _open_drone_id_arm_status_sub.advertised()
 		       ? MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS_LEN +
 		       MAVLINK_NUM_NON_PAYLOAD_BYTES
 		       : 0;
@@ -69,25 +68,17 @@ private:
 	explicit MavlinkStreamOpenDroneIdArmStatus(Mavlink *mavlink)
 		: MavlinkStream(mavlink) {}
 
-	uORB::Subscription _actuator_armed_sub{ORB_ID(actuator_armed)};
+	uORB::Subscription _open_drone_id_arm_status_sub{ORB_ID(open_drone_id_arm_status)};
 
 	bool send() override
 	{
-		actuator_armed_s actuator_armed;
+		open_drone_id_arm_status_s drone_id_arm;
 
-		if (_actuator_armed_sub.update(&actuator_armed)) {
+		if (_open_drone_id_arm_status_sub.update(&drone_id_arm)) {
 
 			mavlink_open_drone_id_arm_status_t msg{};
 
-			if (actuator_armed.ready_to_arm == 1) {
-				// ready to arm
-				msg.status = 0;
-			}
-
-			// vehicle not armed or failure present
-			else {
-				msg.status = 1;
-			}
+			msg.status = drone_id_arm.status;
 
 			mavlink_msg_open_drone_id_arm_status_send_struct(_mavlink->get_channel(),
 					&msg);

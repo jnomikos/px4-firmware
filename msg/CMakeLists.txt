@@ -133,6 +133,7 @@ set(msg_files
 	ObstacleDistance.msg
 	OffboardControlMode.msg
 	OnboardComputerStatus.msg
+        OpenDroneIdArmStatus.msg
 	OrbitStatus.msg
 	OrbTest.msg
 	OrbTestLarge.msg
