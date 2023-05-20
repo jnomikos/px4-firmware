@@ -37,36 +37,37 @@
 
 #include <px4_platform_common/module_params.h>
 #include <uORB/Publication.hpp>
-#include <uORB/topics/health_report.h>
 #include <uORB/topics/failsafe_flags.h>
+#include <uORB/topics/health_report.h>
 
 #include "checks/accelerometerCheck.hpp"
 #include "checks/airspeedCheck.hpp"
 #include "checks/baroCheck.hpp"
+#include "checks/batteryCheck.hpp"
 #include "checks/cpuResourceCheck.hpp"
 #include "checks/distanceSensorChecks.hpp"
 #include "checks/escCheck.hpp"
 #include "checks/estimatorCheck.hpp"
 #include "checks/failureDetectorCheck.hpp"
+#include "checks/flightTimeCheck.hpp"
+#include "checks/geofenceCheck.hpp"
 #include "checks/gyroCheck.hpp"
+#include "checks/homePositionCheck.hpp"
 #include "checks/imuConsistencyCheck.hpp"
 #include "checks/magnetometerCheck.hpp"
 #include "checks/manualControlCheck.hpp"
-#include "checks/homePositionCheck.hpp"
+#include "checks/missionCheck.hpp"
 #include "checks/modeCheck.hpp"
+#include "checks/offboardCheck.hpp"
 #include "checks/parachuteCheck.hpp"
 #include "checks/powerCheck.hpp"
+#include "checks/rcAndDataLinkCheck.hpp"
 #include "checks/rcCalibrationCheck.hpp"
+#include "checks/remoteidCheck.hpp"
 #include "checks/sdcardCheck.hpp"
 #include "checks/systemCheck.hpp"
-#include "checks/batteryCheck.hpp"
-#include "checks/windCheck.hpp"
-#include "checks/geofenceCheck.hpp"
-#include "checks/flightTimeCheck.hpp"
-#include "checks/missionCheck.hpp"
-#include "checks/rcAndDataLinkCheck.hpp"
 #include "checks/vtolCheck.hpp"
-#include "checks/offboardCheck.hpp"
+#include "checks/windCheck.hpp"
 
 class HealthAndArmingChecks : public ModuleParams
 {
@@ -95,12 +96,16 @@ public:
 	/**
 	 * Query the mode requirements: check if a mode prevents arming
 	 */
-	bool modePreventsArming(uint8_t nav_state) const { return _reporter.modePreventsArming(nav_state); }
+	bool modePreventsArming(uint8_t nav_state) const
+	{
+		return _reporter.modePreventsArming(nav_state);
+	}
 
 	const failsafe_flags_s &failsafeFlags() const { return _failsafe_flags; }
 
 protected:
 	void updateParams() override;
+
 private:
 	failsafe_flags_s _failsafe_flags{};
 
@@ -109,7 +114,8 @@ private:
 	orb_advert_t _mavlink_log_pub{nullptr};
 
 	uORB::Publication<health_report_s> _health_report_pub{ORB_ID(health_report)};
-	uORB::Publication<failsafe_flags_s> _failsafe_flags_pub{ORB_ID(failsafe_flags)};
+	uORB::Publication<failsafe_flags_s> _failsafe_flags_pub{
+		ORB_ID(failsafe_flags)};
 
 	// all checks
 	AccelerometerChecks _accelerometer_checks;
@@ -139,6 +145,7 @@ private:
 	RcAndDataLinkChecks _rc_and_data_link_checks;
 	VtolChecks _vtol_checks;
 	OffboardChecks _offboard_checks;
+	RemoteidChecks _remoteid_checks;
 
 	HealthAndArmingCheckBase *_checks[30] = {
 		&_accelerometer_checks,
@@ -156,18 +163,20 @@ private:
 		&_home_position_checks,
 		&_mission_checks,
 		&_offboard_checks, // must be after _estimator_checks
-		&_mode_checks, // must be after _estimator_checks, _home_position_checks, _mission_checks, _offboard_checks
+		&_mode_checks, // must be after _estimator_checks, _home_position_checks,
+		// _mission_checks, _offboard_checks
 		&_parachute_checks,
 		&_power_checks,
 		&_rc_calibration_checks,
 		&_sd_card_checks,
-		&_system_checks, // must be after _estimator_checks & _home_position_checks
+		&_system_checks, // must be after _estimator_checks &
+		// _home_position_checks
 		&_battery_checks,
 		&_wind_checks,
 		&_geofence_checks, // must be after _home_position_checks
 		&_flight_time_checks,
 		&_rc_and_data_link_checks,
 		&_vtol_checks,
+		&_remoteid_checks,
 	};
 };
-
