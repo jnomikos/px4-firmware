@@ -35,28 +35,30 @@
 
 using namespace time_literals;
 
+#define ODID_PRE_ARM_FAIL_GENERIC 1
+
 void RemoteidChecks::checkAndReport(const Context &context, Report &reporter)
 {
+
 	if (context.isArmed()) {
 		return;
 	}
 
-	open_drone_id_arm_status_s drone_id_arm_;
+	open_drone_id_arm_status_s drone_id_arm;
 
-	if (_open_drone_id_arm_status_sub.copy(&drone_id_arm_)) {
+	if (_open_drone_id_arm_status_sub.copy(&drone_id_arm)) {
 
 		// check action switches
-		if (open_drone_id_arm_status.status == true) {
+		if (drone_id_arm.status == ODID_PRE_ARM_FAIL_GENERIC) {
 			/* EVENT
 			 */
-			reporter.armingCheckFailure(NavModes::All,
-						    health_component_t::remote_control,
-						    events::ID("check_man_control_rtl_engaged"),
-						    events::Log::Error, "RTL switch engaged");
+			reporter.armingCheckFailure(NavModes::All, health_component_t::odid,
+						    events::ID("check_open_drone_id_connection"),
+						    events::Log::Error, "Open Drone ID failure");
 
 			if (reporter.mavlink_log_pub()) {
 				mavlink_log_critical(reporter.mavlink_log_pub(),
-						     "Preflight Fail: RTL switch engaged");
+						     "Preflight Fail: Open Drone ID status failure");
 			}
 		}
 	}
