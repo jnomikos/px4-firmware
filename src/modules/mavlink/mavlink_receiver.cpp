@@ -284,6 +284,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_statustext(msg);
 		break;
 
+	case MAVLINK_MSG_OPEN_DRONE_ID_ARM_STATUS:
+		handle_message_open_drone_id_arm_status(msg);
+		break;
+
 #if !defined(CONSTRAINED_FLASH)
 
 	case MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
@@ -3069,7 +3073,21 @@ MavlinkReceiver::handle_message_gimbal_device_attitude_status(mavlink_message_t 
 
 	_gimbal_device_attitude_status_pub.publish(gimbal_attitude_status);
 }
+void MavlinkReceiver::handle_message_open_drone_id_arm_status(
+	mavlink_message_t *msg)
+{
+	mavlink_open_drone_id_arm_status_t odid_module;
+	mavlink_msg_open_drone_id_arm_status_decode(msg, &odid_module);
 
+	open_drone_id_arm_status_s odid_arm{};
+	memset(&odid_arm, 0, sizeof(odid_arm));
+
+	odid_arm.timestamp = hrt_absolute_time();
+	odid_arm.status = odid_module.status;
+	// odid_module.error;
+
+	_open_drone_id_arm_status_pub.publish(odid_arm);
+}
 void
 MavlinkReceiver::run()
 {
