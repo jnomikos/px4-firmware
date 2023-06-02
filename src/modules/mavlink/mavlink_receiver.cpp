@@ -284,7 +284,7 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_statustext(msg);
 		break;
 
-	case MAVLINK_MSG_OPEN_DRONE_ID_ARM_STATUS:
+	case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS:
 		handle_message_open_drone_id_arm_status(msg);
 		break;
 
