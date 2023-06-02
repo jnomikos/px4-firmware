@@ -240,10 +240,6 @@
                         "536870912": {
                             "name": "gyro",
                             "description": "Gyroscope"
-                        },
-                        "1073741820": {
-                            "name": "odid",
-                            "description": "DroneID"
                         }
                     }
                 },

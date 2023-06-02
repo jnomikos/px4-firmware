@@ -57,7 +57,6 @@
 #include "checks/parachuteCheck.hpp"
 #include "checks/powerCheck.hpp"
 #include "checks/rcCalibrationCheck.hpp"
-#include "checks/remoteidCheck.hpp"
 #include "checks/sdcardCheck.hpp"
 #include "checks/systemCheck.hpp"
 #include "checks/batteryCheck.hpp"
@@ -140,7 +139,6 @@ private:
 	RcAndDataLinkChecks _rc_and_data_link_checks;
 	VtolChecks _vtol_checks;
 	OffboardChecks _offboard_checks;
-	RemoteidChecks _remoteid_checks;
 
 	HealthAndArmingCheckBase *_checks[30] = {
 		&_accelerometer_checks,
@@ -170,6 +168,5 @@ private:
 		&_flight_time_checks,
 		&_rc_and_data_link_checks,
 		&_vtol_checks,
-		&_remoteid_checks,
 	};
 };
