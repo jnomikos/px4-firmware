@@ -89,7 +89,7 @@ private:
 				msg.target_component = 0; // 0 for broadcast
 				msg.target_system = 0;    // 0 for broadcast
 				// msg.id_or_mac // Only used for drone ID data received from other UAs.
-				msg.operator_location_type = MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS;
+				msg.operator_location_type = MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF;
 				msg.classification_type = MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED;
 				msg.operator_latitude = home_position.lat * 1e7;
 				msg.operator_longitude = home_position.lon * 1e7;
