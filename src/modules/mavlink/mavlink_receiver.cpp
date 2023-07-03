@@ -3117,6 +3117,25 @@ void MavlinkReceiver::handle_message_open_drone_id_operator_id(
 	_open_drone_id_operator_id_pub.publish(odid_operator_id);
 }
 
+void MavlinkReceiver::handle_message_open_drone_id_self_id(
+	mavlink_message_t *msg)
+{
+	mavlink_open_drone_id_self_id_t odid_module;
+	mavlink_msg_open_drone_id_self_id_decode(msg, &odid_module);
+
+	open_drone_id_self_id_s odid_self_id{};
+	memset(&odid_self_id, 0, sizeof(odid_self_id));
+
+	odid_self_id.timestamp = hrt_absolute_time();
+	odid_self_id.target_system = odid_module.target_system;
+	odid_self_id.target_component = odid_module.target_component;
+	memcpy(odid_self_id.id_or_mac, odid_module.id_or_mac, sizeof(odid_self_id.id_or_mac));
+	odid_self_id.description_type = odid_module.description_type;
+	memcpy(odid_self_id.description, odid_module.description, sizeof(odid_self_id.description));
+
+	_open_drone_id_self_id_pub.publish(odid_self_id);
+}
+
 void MavlinkReceiver::handle_message_open_drone_id_system(
 	mavlink_message_t *msg)
 {

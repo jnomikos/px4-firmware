@@ -89,6 +89,7 @@
 #include <uORB/topics/onboard_computer_status.h>
 #include <uORB/topics/open_drone_id_arm_status.h>
 #include <uORB/topics/open_drone_id_operator_id.h>
+#include <uORB/topics/open_drone_id_self_id.h>
 #include <uORB/topics/open_drone_id_system.h>
 #include <uORB/topics/ping.h>
 #include <uORB/topics/position_setpoint_triplet.h>
@@ -184,6 +185,7 @@ private:
 	void handle_message_onboard_computer_status(mavlink_message_t *msg);
 	void handle_message_open_drone_id_arm_status(mavlink_message_t *msg);
 	void handle_message_open_drone_id_operator_id(mavlink_message_t *msg);
+	void handle_message_open_drone_id_self_id(mavlink_message_t *msg);
 	void handle_message_open_drone_id_system(mavlink_message_t *msg);
 	void handle_message_optical_flow_rad(mavlink_message_t *msg);
 	void handle_message_ping(mavlink_message_t *msg);
@@ -313,6 +315,7 @@ private:
 	uORB::Publication<onboard_computer_status_s>		_onboard_computer_status_pub{ORB_ID(onboard_computer_status)};
 	uORB::Publication<open_drone_id_arm_status_s> _open_drone_id_arm_status_pub{ORB_ID(open_drone_id_arm_status)};
 	uORB::Publication<open_drone_id_operator_id_s> _open_drone_id_operator_id_pub{ORB_ID(open_drone_id_operator_id)};
+	uORB::Publication<open_drone_id_self_id_s> _open_drone_id_self_id_pub{ORB_ID(open_drone_id_self_id)};
 	uORB::Publication<open_drone_id_system_s> _open_drone_id_system_pub{ORB_ID(open_drone_id_system)};
 	uORB::Publication<generator_status_s>			_generator_status_pub{ORB_ID(generator_status)};
 	uORB::Publication<vehicle_attitude_s>			_attitude_pub{ORB_ID(vehicle_attitude)};
