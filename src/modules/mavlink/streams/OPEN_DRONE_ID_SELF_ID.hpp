@@ -73,22 +73,26 @@ private:
 	bool send() override
 	{
 		open_drone_id_self_id_s self_id;
-		_open_drone_id_self_id_sub.copy(&self_id);
 
-		mavlink_open_drone_id_self_id_t msg{};
-		msg.target_system = 0;    // 0 for broadcast
-		msg.target_component = 0; // 0 for broadcast
-		// msg.id_or_mac // Only used for drone ID data received from other UAs.
-		msg.description_type = self_id.description_type;
+		if(_open_drone_id_self_id_sub.update(&self_id)) {
 
-		for (uint8_t i = 0; i < 23; ++i) {
-			msg.description[i] = self_id.description[i];
+			mavlink_open_drone_id_self_id_t msg{};
+			msg.target_system = 0;    // 0 for broadcast
+			msg.target_component = 0; // 0 for broadcast
+			// msg.id_or_mac // Only used for drone ID data received from other UAs.
+			msg.description_type = self_id.description_type;
+
+			for (uint8_t i = 0; i < 23; ++i) {
+				msg.description[i] = self_id.description[i];
+			}
+
+			mavlink_msg_open_drone_id_self_id_send_struct(_mavlink->get_channel(),
+					&msg);
+
+			return true;
 		}
 
-		mavlink_msg_open_drone_id_self_id_send_struct(_mavlink->get_channel(),
-				&msg);
-
-		return true;
+		return false;
 	}
 };
 
