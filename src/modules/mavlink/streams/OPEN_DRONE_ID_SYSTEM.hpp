@@ -36,6 +36,7 @@
 
 #include <uORB/topics/home_position.h>
 #include <uORB/topics/sensor_gps.h>
+#include <uORB/topics/open_drone_id_system.h>
 
 class MavlinkStreamOpenDroneIdSystem : public MavlinkStream
 {
@@ -74,20 +75,21 @@ private:
 
 	uORB::Subscription _home_position_sub{ORB_ID(home_position)};
 	uORB::Subscription _vehicle_gps_position_sub{ORB_ID(vehicle_gps_position)};
+	uORB::Subscription _open_drone_id_system_sub{ORB_ID(open_drone_id_system)};
 
 	bool send() override
 	{
 		sensor_gps_s vehicle_gps_position;
 		home_position_s home_position;
-
+		open_drone_id_system_s odid_system;
 		if (_vehicle_gps_position_sub.update(&vehicle_gps_position) &&
 		    _home_position_sub.copy(&home_position)) {
 			if (vehicle_gps_position.fix_type >= 3 && home_position.valid_alt &&
 			    home_position.valid_hpos) {
 
 				mavlink_open_drone_id_system_t msg{};
-				msg.target_component = 0; // 0 for broadcast
 				msg.target_system = 0;    // 0 for broadcast
+				msg.target_component = 0; // 0 for broadcast
 				// msg.id_or_mac // Only used for drone ID data received from other UAs.
 				msg.operator_location_type = MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF;
 				msg.classification_type = MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED;
@@ -114,6 +116,36 @@ private:
 			}
 		}
 
+
+		if (_vehicle_gps_position_sub.update(&vehicle_gps_position) &&
+		    _home_position_sub.copy(&home_position) && _open_drone_id_system_sub.update(&odid_system)) {
+			if (vehicle_gps_position.fix_type >= 3 && home_position.valid_alt &&
+				home_position.valid_hpos) {
+
+				mavlink_open_drone_id_system_t msg{};
+
+				msg.target_system = 0;    // 0 for broadcast
+				msg.target_component = 0; // 0 for broadcast
+				// msg.id_or_mac // Only used for drone ID data received from other UAs.
+				msg.operator_location_type = odid_system.operator_location_type;
+				msg.classification_type = odid_system.classification_type;
+				msg.operator_latitude = odid_system.operator_latitude;
+				msg.operator_longitude = odid_system.operator_longitude;
+				msg.area_count = odid_system.area_count;
+				msg.area_radius = odid_system.area_radius;
+				msg.area_ceiling = odid_system.area_ceiling;
+				msg.area_floor = odid_system.area_floor;
+				msg.category_eu = odid_system.category_eu;
+				msg.class_eu = odid_system.class_eu;
+				msg.operator_altitude_geo = odid_system.operator_altitude_geo;
+
+				msg.timestamp = odid_system.timestamp;
+
+				mavlink_msg_open_drone_id_system_send_struct(_mavlink->get_channel(),
+							&msg);
+				return true;
+			}
+		}
 		return false;
 	}
 };
