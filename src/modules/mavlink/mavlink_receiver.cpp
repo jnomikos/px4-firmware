@@ -292,6 +292,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_open_drone_id_operator_id(msg);
 		break;
 
+	case MAVLINK_MSG_ID_OPEN_DRONE_ID_SELF_ID:
+		handle_message_open_drone_id_self_id(msg);
+		break;
+
 	case MAVLINK_MSG_ID_OPEN_DRONE_ID_SYSTEM:
 		handle_message_open_drone_id_system(msg);
 		break;
