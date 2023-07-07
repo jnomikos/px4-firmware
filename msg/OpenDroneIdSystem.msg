@@ -4,8 +4,8 @@ uint8 target_component
 uint8[20] id_or_mac
 uint8 operator_location_type
 uint8 classification_type
-uint32 operator_latitude
-uint32 operator_longitude
+int32 operator_latitude
+int32 operator_longitude
 uint16 area_count
 uint16 area_radius
 float32 area_ceiling
