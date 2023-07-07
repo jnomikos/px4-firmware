@@ -82,10 +82,11 @@ private:
 		sensor_gps_s vehicle_gps_position;
 		home_position_s home_position;
 		open_drone_id_system_s odid_system;
+
 		if (_vehicle_gps_position_sub.update(&vehicle_gps_position) &&
 		    _home_position_sub.copy(&home_position) && _open_drone_id_system_sub.update(&odid_system)) {
 			if (vehicle_gps_position.fix_type >= 3 && home_position.valid_alt &&
-				home_position.valid_hpos) {
+			    home_position.valid_hpos) {
 
 				mavlink_open_drone_id_system_t msg{};
 
@@ -107,10 +108,11 @@ private:
 				msg.timestamp = odid_system.timestamp;
 
 				mavlink_msg_open_drone_id_system_send_struct(_mavlink->get_channel(),
-							&msg);
+						&msg);
 				return true;
 			}
 		}
+
 		return false;
 	}
 };

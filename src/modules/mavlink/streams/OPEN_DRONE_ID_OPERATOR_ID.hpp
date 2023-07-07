@@ -75,7 +75,7 @@ private:
 	{
 		open_drone_id_operator_id_s operator_id{};
 
-		if(_open_drone_id_operator_id_sub.update(&operator_id)) {
+		if (_open_drone_id_operator_id_sub.update(&operator_id)) {
 
 			mavlink_open_drone_id_operator_id_t msg{};
 			msg.target_system = 0;    // 0 for broadcast
