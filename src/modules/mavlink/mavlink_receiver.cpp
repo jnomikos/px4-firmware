@@ -3188,6 +3188,8 @@ void MavlinkReceiver::handle_message_open_drone_id_system(
 	odid_system.category_eu = odid_module.category_eu;
 	odid_system.class_eu = odid_module.class_eu;
 	odid_system.operator_altitude_geo = odid_module.operator_altitude_geo;
+
+	_open_drone_id_system_pub.publish(odid_system);
 }
 
 void

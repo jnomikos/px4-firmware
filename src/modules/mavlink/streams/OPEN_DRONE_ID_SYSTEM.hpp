@@ -105,7 +105,11 @@ private:
 				msg.class_eu = odid_system.class_eu;
 				msg.operator_altitude_geo = odid_system.operator_altitude_geo;
 
-				msg.timestamp = odid_system.timestamp;
+				// timestamp: 32 bit Unix Timestamp in seconds since 00:00:00
+				// 01/01/2019.
+				static uint64_t utc_offset_s =
+					1'546'300'800; // UTC seconds since 00:00:00 01/01/2019
+				msg.timestamp = vehicle_gps_position.time_utc_usec / 1e6 - utc_offset_s;
 
 				mavlink_msg_open_drone_id_system_send_struct(_mavlink->get_channel(),
 						&msg);
