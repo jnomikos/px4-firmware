@@ -82,45 +82,11 @@ private:
 		sensor_gps_s vehicle_gps_position;
 		home_position_s home_position;
 		open_drone_id_system_s odid_system;
-		if (_vehicle_gps_position_sub.update(&vehicle_gps_position) &&
-		    _home_position_sub.copy(&home_position)) {
-			if (vehicle_gps_position.fix_type >= 3 && home_position.valid_alt &&
-			    home_position.valid_hpos) {
-
-				mavlink_open_drone_id_system_t msg{};
-				msg.target_system = 0;    // 0 for broadcast
-				msg.target_component = 0; // 0 for broadcast
-				// msg.id_or_mac // Only used for drone ID data received from other UAs.
-				msg.operator_location_type = MAV_ODID_OPERATOR_LOCATION_TYPE_TAKEOFF;
-				msg.classification_type = MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED;
-				msg.operator_latitude = home_position.lat * 1e7;
-				msg.operator_longitude = home_position.lon * 1e7;
-				msg.area_count = 1;
-				msg.area_radius = 0;
-				msg.area_ceiling = -1000;
-				msg.area_floor = -1000;
-				msg.category_eu = MAV_ODID_CATEGORY_EU_UNDECLARED;
-				msg.class_eu = MAV_ODID_CLASS_EU_UNDECLARED;
-				msg.operator_altitude_geo = home_position.alt;
-
-				// timestamp: 32 bit Unix Timestamp in seconds since 00:00:00
-				// 01/01/2019.
-				static uint64_t utc_offset_s =
-					1'546'300'800; // UTC seconds since 00:00:00 01/01/2019
-				msg.timestamp = vehicle_gps_position.time_utc_usec / 1e6 - utc_offset_s;
-
-				mavlink_msg_open_drone_id_system_send_struct(_mavlink->get_channel(),
-						&msg);
-
-				return true;
-			}
-		}
-
 
 		if (_vehicle_gps_position_sub.update(&vehicle_gps_position) &&
 		    _home_position_sub.copy(&home_position) && _open_drone_id_system_sub.update(&odid_system)) {
 			if (vehicle_gps_position.fix_type >= 3 && home_position.valid_alt &&
-				home_position.valid_hpos) {
+			    home_position.valid_hpos) {
 
 				mavlink_open_drone_id_system_t msg{};
 
@@ -142,10 +108,11 @@ private:
 				msg.timestamp = odid_system.timestamp;
 
 				mavlink_msg_open_drone_id_system_send_struct(_mavlink->get_channel(),
-							&msg);
+						&msg);
 				return true;
 			}
 		}
+
 		return false;
 	}
 };

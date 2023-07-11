@@ -34,7 +34,7 @@
 #ifndef OPEN_DRONE_ID_BASIC_ID_HPP
 #define OPEN_DRONE_ID_BASIC_ID_HPP
 
-#include <uORB/topics/vehicle_status.h>
+#include <uORB/topics/open_drone_id_basic_id.h>
 
 class MavlinkStreamOpenDroneIdBasicId : public MavlinkStream
 {
@@ -49,129 +49,51 @@ public:
 
 	unsigned get_size() override
 	{
-		return _vehicle_status_sub.advertised() ? MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES : 0;
+		return _open_drone_id_basic_id_sub.advertised() ? MAVLINK_MSG_ID_OPEN_DRONE_ID_BASIC_ID_LEN +
+		       MAVLINK_NUM_NON_PAYLOAD_BYTES : 0;
 	}
 
 private:
 	explicit MavlinkStreamOpenDroneIdBasicId(Mavlink *mavlink) : MavlinkStream(mavlink) {}
 
-	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
-
-	MAV_ODID_UA_TYPE odidTypeForMavType(uint8_t system_type)
-	{
-		switch (system_type) {
-		case MAV_TYPE_GENERIC: return MAV_ODID_UA_TYPE_OTHER;
-
-		case MAV_TYPE_FIXED_WING: return MAV_ODID_UA_TYPE_AEROPLANE;
-
-		case MAV_TYPE_QUADROTOR: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_COAXIAL: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_HELICOPTER: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_ANTENNA_TRACKER: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_GCS: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_AIRSHIP: return MAV_ODID_UA_TYPE_AIRSHIP;
-
-		case MAV_TYPE_FREE_BALLOON: return MAV_ODID_UA_TYPE_FREE_BALLOON;
-
-		case MAV_TYPE_ROCKET: return MAV_ODID_UA_TYPE_ROCKET;
-
-		case MAV_TYPE_GROUND_ROVER: return MAV_ODID_UA_TYPE_GROUND_OBSTACLE;
-
-		case MAV_TYPE_SURFACE_BOAT: return MAV_ODID_UA_TYPE_OTHER;
-
-		case MAV_TYPE_SUBMARINE: return MAV_ODID_UA_TYPE_OTHER;
-
-		case MAV_TYPE_HEXAROTOR: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_OCTOROTOR: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_TRICOPTER: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_FLAPPING_WING: return MAV_ODID_UA_TYPE_ORNITHOPTER;
-
-		case MAV_TYPE_KITE: return MAV_ODID_UA_TYPE_KITE;
-
-		case MAV_TYPE_ONBOARD_CONTROLLER: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_TAILSITTER_QUADROTOR: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_TILTROTOR: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_FIXEDROTOR: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_TAILSITTER: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_TILTWING: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_VTOL_RESERVED5: return MAV_ODID_UA_TYPE_HYBRID_LIFT;
-
-		case MAV_TYPE_GIMBAL: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_ADSB: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_PARAFOIL: return MAV_ODID_UA_TYPE_FREE_FALL_PARACHUTE;
-
-		case MAV_TYPE_DODECAROTOR: return MAV_ODID_UA_TYPE_HELICOPTER_OR_MULTIROTOR;
-
-		case MAV_TYPE_CAMERA: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_CHARGING_STATION: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_FLARM: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_SERVO: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_ODID: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_DECAROTOR: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_BATTERY: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_PARACHUTE: return MAV_ODID_UA_TYPE_FREE_FALL_PARACHUTE;
-
-		case MAV_TYPE_LOG: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_OSD: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_IMU: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_GPS: return MAV_ODID_UA_TYPE_NONE;
-
-		case MAV_TYPE_WINCH: return MAV_ODID_UA_TYPE_NONE;
-
-		default: return MAV_ODID_UA_TYPE_OTHER;
-		}
-	}
+	uORB::Subscription _open_drone_id_basic_id_sub{ORB_ID(open_drone_id_basic_id)};
 
 
 	bool send() override
 	{
-		vehicle_status_s vehicle_status;
+		open_drone_id_basic_id_s basic_id{};
 
-		if (_vehicle_status_sub.update(&vehicle_status)) {
+		if (_open_drone_id_basic_id_sub.update(&basic_id)) {
 
 			mavlink_open_drone_id_basic_id_t msg{};
-
-			msg.target_system = 0; // 0 for broadcast
-			msg.target_component = 0; // 0 for broadcast
-			// msg.id_or_mac // Only used for drone ID data received from other UAs.
-
-			// id_type: MAV_ODID_ID_TYPE
-			msg.id_type = MAV_ODID_ID_TYPE_SERIAL_NUMBER;
-
-			// ua_type: MAV_ODID_UA_TYPE
-			msg.ua_type = odidTypeForMavType(vehicle_status.system_type);
+			msg.target_system = basic_id.target_system;
+			msg.target_component = basic_id.target_component;
+			// msg.id_or_mac = basic_id.id_or_mac; // Only used for drone ID data received from other UAs.
+			msg.id_type = basic_id.id_type;
+			msg.ua_type = basic_id.ua_type;
 
 			// uas_id: UAS (Unmanned Aircraft System) ID following the format specified by id_type
-			// TODO: MAV_ODID_ID_TYPE_SERIAL_NUMBER needs to be ANSI/CTA-2063 format
-			board_get_px4_guid_formated((char *)(msg.uas_id), sizeof(msg.uas_id));
+			// MAV_ODID_ID_TYPE_SERIAL_NUMBER *shoud* to be ANSI/CTA-2063 format
+			// however this does not apply to hobby air frames/diy kits or self fabricated
+			// this is only applicable to fully built/off the shelf unit/bind n' fly
+			if (basic_id.uas_id) {
+				for (uint8_t i = 0; i < 20; ++i) {
+
+					msg.uas_id[i] = basic_id.uas_id[i];
+
+				}
+
+			} else {
+				// Per Mavlink definitions, this should be null filled if empty
+				for (uint8_t i = 0; i < 20; ++i) {
+
+					msg.uas_id[i] = '\0';
+
+				}
+
+
+			}
+
 
 			mavlink_msg_open_drone_id_basic_id_send_struct(_mavlink->get_channel(), &msg);
 
