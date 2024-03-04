@@ -1523,6 +1523,7 @@ void
 FixedwingPositionControl::control_auto_landing_straight(const hrt_abstime &now, const float control_interval,
 		const Vector2f &ground_speed, const position_setpoint_s &pos_sp_prev, const position_setpoint_s &pos_sp_curr)
 {
+	PX4_INFO("Running control_auto_landing_straight");
 	// first handle non-position things like airspeed and tecs settings
 	const float airspeed_land = (_param_fw_lnd_airspd.get() > FLT_EPSILON) ? _param_fw_lnd_airspd.get() :
 				    _param_fw_airspd_min.get();
@@ -2738,6 +2739,8 @@ float
 FixedwingPositionControl::getLandingTerrainAltitudeEstimate(const hrt_abstime &now, const float land_point_altitude,
 		const bool abort_on_terrain_measurement_timeout, const bool abort_on_terrain_timeout)
 {
+
+	PX4_INFO("getLandingTerrainAltitudeEstimate");
 	if (_param_fw_lnd_useter.get() > TerrainEstimateUseOnLanding::kDisableTerrainEstimation) {
 
 		if (_local_pos.dist_bottom_valid) {
